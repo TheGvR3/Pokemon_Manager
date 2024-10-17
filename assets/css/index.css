@@ -1,0 +1,94 @@
+
+.content {
+    padding: 20px;
+}
+.news {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+.news-preview{
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    gap: 20px; 
+    background-color: #a5a5a5;
+    padding: 20px; 
+}
+
+
+.img-preview{
+    width: 220px;
+    height: 136px;
+    border-radius: 8px;
+}
+
+.container{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.last-news{
+    background-color: #a5a5a5;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.last-news img{
+    width: 350px;
+    height: 500px;
+    border-radius: 8px;
+}
+
+.pokemon-del-giorno {
+    width: 100%;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    display: flex;               /* Usa il Flexbox per centrare */
+    justify-content: center;     /* Centra orizzontalmente */
+    align-items: center;         /* Centra verticalmente (se necessario) */
+    flex-direction: column;  
+}
+
+.box {
+    width: 300px; /* Imposta la larghezza */
+    height: 250px; /* Imposta l'altezza */
+    padding: 5px;
+    padding-bottom: 10px;
+    -webkit-box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.45); 
+    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.45);
+    border-radius: 10px;
+    text-align: center;    
+    justify-content: center;
+    align-items: center;
+}
+
+
+.day-pokemon-img{
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    
+}
+
+.type_box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.type-image {
+    width: 90px;
+    height: auto;
+    margin-left: 10px;
+}
