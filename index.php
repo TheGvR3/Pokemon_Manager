@@ -20,12 +20,13 @@ try {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PokeManager</title>
+    <title>PokeManager - Il tuo portale Pokémon</title>
+    <meta name="description" content="Scopri le ultime notizie, eventi e informazioni sui Pokémon. PokeManager è la tua fonte principale per tutto ciò che riguarda il mondo Pokémon.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="assets/css/menu.css">
     <link rel="stylesheet" href="assets/css/index.css">
@@ -34,10 +35,10 @@ try {
 <body>
     <?php include('components/menu.php'); ?>
 
-    <div class="content">
-        <div class="news">
-            <div>
-                <h2>Ultime Notizie</h2>
+    <main class="content">
+        <section class="news">
+            <div class="news-text">
+                <h1>Ultime Notizie Pokémon</h1>
                 <p>Scopri le ultime novità del mondo dei Pokémon!</p>
                 <ul>
                     <li>Nuovi Pokémon aggiunti alla lista!</li>
@@ -46,31 +47,25 @@ try {
                 </ul>
             </div>
             <div class="news-preview">
-                <img src="assets/images/hq720.jpg" class="img-preview">
-                <img src="assets/images/pokemon-multiplayer-game-leak.jpg" class="img-preview">
-                <img src="assets/images/SV08SurgingSparks.jpeg" class="img-preview">
+                <img src="assets/images/hq720.jpg" alt="Anteprima notizie Pokémon 1" class="img-preview">
+                <img src="assets/images/pokemon-multiplayer-game-leak.jpg" alt="Anteprima notizie Pokémon 2" class="img-preview">
+                <img src="assets/images/SV08SurgingSparks.jpeg" alt="Anteprima notizie Pokémon 3" class="img-preview">
             </div>
-        </div>
+        </section>
 
         <div class="container">
-            <div class="last-news">
-                <img src="assets/images/pokemon-multiplayer-game-leak.jpg">
+            <article class="last-news">
+                <img src="assets/images/pokemon-multiplayer-game-leak.jpg" alt="MEGA-Leak in Gamefreak" class="news-image">
                 <div class="details">
-                    <h3>MEGA-Leak in Gamefreak!</h3>
+                    <h2>MEGA-Leak in Gamefreak!</h2>
                     <p>Il mondo Pokémon è in subbuglio dopo che una valanga di informazioni riservate provenienti da Game Freak, 
-                        la casa di sviluppo della celebre serie, è stata diffusa online. I leak, condivisi inizialmente via X, hanno rapidamente guadagnato l'attenzione dei fan,
-                        scatenando discussioni accese e facendo schizzare diversi hashtag in cima alle tendenze. Ecco cinque punti salienti di questa fuga di notizie (assolutamente non confermate da Game Freak),
-                        che gettano luce su aspetti inediti e a volte inquietanti del mondo Pokémon.
-                        I leak hanno portato alla luce racconti popolari di Sinnoh finora inediti, 
-                        che dipingono un quadro a tinte fosche del rapporto tra umani e Pokémon. 
-                        Una di queste, in particolare, ha turbato i fan, rivelando un lato oscuro e predatorio di Octillery. 
-                        Il racconto descrive come questo Pokémon, apparentemente innocuo, adescasse gli umani con la sua luminescenza per poi trascinarli negli abissi marini.
-                        Un'immagine ben lontana da quella del Pokémon buffo e giocherellone che conosciamo.
-                    </p>
+                       la casa di sviluppo della celebre serie, è stata diffusa online. I leak, condivisi inizialmente via X, hanno rapidamente guadagnato l'attenzione dei fan,
+                       scatenando discussioni accese e facendo schizzare diversi hashtag in cima alle tendenze.</p>
+                    <a href="#" class="read-more">Leggi di più</a>
                 </div>
-            </div>
+            </article>
 
-            <div class="pokemon-del-giorno">
+            <aside class="pokemon-del-giorno">
                 <h2>Lucky Pokémon!</h2>
                 <div class="box">
                     <p><strong>#<?php echo htmlspecialchars($pokemonDelGiorno['national_pokedex_number']); ?></strong> - <?php echo htmlspecialchars($pokemonDelGiorno['name']); ?></p>
@@ -105,9 +100,9 @@ try {
                         <?php endforeach; ?>
                     </div>
                 </div>
-            </div>
+            </aside>
         </div>
-    </div>
+    </main>
 
     <script>
         function toggleMenu() {

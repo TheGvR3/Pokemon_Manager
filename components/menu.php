@@ -2,8 +2,6 @@
     <h1>Poke Manager by GvR</h1>
 </header>
 
-
-
 <nav>
     <div class="menu-icon" onclick="toggleMenu()">&#9776; Menu</div>
     <div class="nav-links">

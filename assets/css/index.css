@@ -1,94 +1,213 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #f0f0f0;
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+}
 
 .content {
-    padding: 20px;
-}
-.news {
-    background-color: #fff;
     padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-}
-.news-preview{
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; 
-    gap: 20px; 
-    background-color: #a5a5a5;
-    padding: 20px; 
+    max-width: 100%;
+    margin: 0 auto;
 }
 
-
-.img-preview{
-    width: 220px;
-    height: 136px;
-    border-radius: 8px;
-}
-
-.container{
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.last-news{
-    background-color: #a5a5a5;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+.news {
+    background-color: #444;
     padding: 20px;
-    border-radius: 5px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.last-news img{
-    width: 350px;
-    height: 500px;
+.news-text h1 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.news-text p, .news-text ul {
+    color: #ddd;
+}
+
+.news-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.img-preview {
+    width: 100%;
+    height: auto;
     border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.last-news {
+    background-color: #444;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.news-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.details h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.details p {
+    color: #ddd;
+}
+
+.read-more {
+    display: inline-block;
+    margin-top: 15px;
+    color: #4da6ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.read-more:hover {
+    text-decoration: underline;
 }
 
 .pokemon-del-giorno {
-    width: 100%;
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 5px;
+    background-color: #444;
+    padding: 20px;
+    border-radius: 8px;
     text-align: center;
-    display: flex;               /* Usa il Flexbox per centrare */
-    justify-content: center;     /* Centra orizzontalmente */
-    align-items: center;         /* Centra verticalmente (se necessario) */
-    flex-direction: column;  
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.pokemon-del-giorno h2 {
+    color: #fff;
+    margin-bottom: 15px;
 }
 
 .box {
-    width: 300px; /* Imposta la larghezza */
-    height: 250px; /* Imposta l'altezza */
-    padding: 5px;
-    padding-bottom: 10px;
-    -webkit-box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.45); 
-    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.45);
+    padding: 15px;
+    background-color: #555;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    text-align: center;    
-    justify-content: center;
-    align-items: center;
 }
 
+.box p {
+    color: #fff;
+}
 
-.day-pokemon-img{
+.day-pokemon-img {
     width: 150px;
     height: 150px;
-    object-fit: cover;
-    
+    object-fit: contain;
+    margin: 10px 0;
 }
 
-.type_box{
+.type_box {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 .type-image {
-    width: 90px;
+    width: 60px;
     height: auto;
-    margin-left: 10px;
+}
+
+@media (min-width: 576px) {
+    .news-preview {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .img-preview {
+        width: calc(50% - 7.5px);
+    }
+}
+
+@media (min-width: 768px) {
+    .content {
+        padding: 20px;
+    }
+
+    .news {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .news-text {
+        flex: 1;
+        padding-right: 20px;
+    }
+
+    .news-preview {
+        flex: 1;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .img-preview {
+        width: calc(33.33% - 10px);
+    }
+
+    .container {
+        flex-direction: row;
+    }
+
+    .last-news {
+        flex: 2;
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .news-image {
+        width: 300px;
+        margin-bottom: 0;
+    }
+
+    .pokemon-del-giorno {
+        flex: 1;
+    }
+}
+
+@media (min-width: 992px) {
+    .content {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .content {
+        max-width: 1140px;
+    }
+}
+
+a {
+    text-decoration: none;
+    color: #4da6ff;
+}
+
+a:hover {
+    text-decoration: underline;
 }

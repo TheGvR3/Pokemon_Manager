@@ -20,12 +20,13 @@ try {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokédex</title>
+    <title>Pokédex - Lista Pokémon</title>
+    <meta name="description" content="Esplora la lista completa dei Pokémon con dettagli su tipi, abilità e statistiche.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="assets/css/menu.css">
     <link rel="stylesheet" href="assets/css/pokemon_list.css">
@@ -34,88 +35,83 @@ try {
 <body>
     <?php include('components/menu.php'); ?>
 
-    <div class="search-container">
-        <input type="text" id="search" placeholder="Search Pokemon by name"> <!-- Campo di ricerca -->
-    </div>
+    <main class="content">
+        <h1>Pokédex</h1>
 
-    <div class="table-container">
-        <table id="pokemonTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Icon</th>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Category</th>
-                    <th>Abilities</th>
-                    <th>Gender Difference</th>
-                    <th>Mega Evolution</th> <!-- Intestazione per megaevoluzioni -->
-                    <th>Gigamax</th> <!-- Intestazione per gigamax -->
-                    <th>Alpha Form</th>
-                    <th>Base Stats</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($pokemon as $poke): ?>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Cerca Pokémon per nome">
+        </div>
+
+        <div class="table-container">
+            <table id="pokemonTable">
+                <thead>
                     <tr>
-                        <td>
-                            <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
-                                <?php echo htmlspecialchars($poke['national_pokedex_number']); ?>
-                            </a>
-                        </td>
-                        <td class="pokemonIcon">
-                            <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
-                                <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($poke['pokemon_icon']); ?>" alt="<?php echo htmlspecialchars($poke['name']); ?>" class="pokemonIcon">
-                            </a>
-                        </td>
-                        <td>
-                            <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
-                                <?php echo htmlspecialchars($poke['name']); ?>
-                            </a>
-                        </td>
-                        <td>
-                            <?php
-                            $type_icons = explode(',', $poke['type_icons']);
-                            foreach ($type_icons as $icon):
-                                echo '<img src="assets/images/type/' . htmlspecialchars($icon) . '" alt="Tipo" class="type-image">'; // Corretto il percorso delle icone dei tipi
-                            endforeach;
-                            ?>
-                        </td>
-                        <td><?php echo htmlspecialchars($poke['category']); ?></td>
-                        <td>
-                            <?php
-                            $abilities = explode(',', $poke['abilities']); // Divide le abilità in un array
-                            $abilitiesHtml = [];
-
-                            foreach ($abilities as $index => $ability) {
-                                $abilitiesHtml[] = htmlspecialchars($ability) . ($index < count($abilities) - 1 ? ',' : '');
-                            }
-
-                            echo implode('<br>', $abilitiesHtml); // Mostra le abilità separate da un a capo
-                            ?>
-                        </td>
-
-                        <td><?php echo htmlspecialchars($poke['gender_differences'] ? 'Yes' : 'No'); ?></td>
-
-                        <td><?php echo htmlspecialchars($poke['has_mega_evolution'] ? 'Yes' : 'No'); ?></td> <!-- Mostra se ha megaevoluzione -->
-                        <td><?php echo htmlspecialchars($poke['has_gigamax'] ? 'Yes' : 'No'); ?></td> <!-- Mostra se ha gigamax -->
-                        <td><?php echo htmlspecialchars($poke['alpha'] ? 'Yes' : 'No'); ?></td>
-                        <td><?php echo htmlspecialchars($poke['base_stats']); ?></td>
+                        <th>#</th>
+                        <th>Icon</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th class="hide-mobile">Statistiche Base</th>
+                        <th class="hide-mobile">Abilità</th>
+                        <th class="hide-mobile">Categoria</th>
+                        <th class="hide-mobile">Differenza di Genere</th>
+                        <th class="hide-mobile">Mega Evoluzione</th>
+                        <th class="hide-mobile">Gigamax</th>
+                        <th class="hide-mobile">Forma Alpha</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    <?php foreach ($pokemon as $poke): ?>
+                        <tr>
+                            <td data-label="#">
+                                <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>">
+                                    <?php echo htmlspecialchars($poke['national_pokedex_number']); ?>
+                                </a>
+                            </td>
+                            <td data-label="Icon" class="pokemonIcon">
+                                <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>">
+                                    <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($poke['pokemon_icon']); ?>" alt="<?php echo htmlspecialchars($poke['name']); ?>">
+                                </a>
+                            </td>
+                            <td data-label="Nome">
+                                <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>">
+                                    <?php echo htmlspecialchars($poke['name']); ?>
+                                </a>
+                            </td>
+                            <td data-label="Tipo">
+                                <?php
+                                $type_icons = explode(',', $poke['type_icons']);
+                                foreach ($type_icons as $icon):
+                                    echo '<img src="assets/images/type/' . htmlspecialchars($icon) . '" alt="Tipo" class="type-image">';
+                                endforeach;
+                                ?>
+                            </td>
+                            <td data-label="Statistiche Base" class="hide-mobile"><?php echo htmlspecialchars($poke['base_stats']); ?></td>
+                            <td data-label="Abilità" class="hide-mobile">
+                                <?php
+                                $abilities = explode(',', $poke['abilities']);
+                                echo implode('<br>', array_map('htmlspecialchars', $abilities));
+                                ?>
+                            </td>
+                            <td data-label="Categoria" class="hide-mobile"><?php echo htmlspecialchars($poke['category']); ?></td>
+                            <td data-label="Differenza di Genere" class="hide-mobile"><?php echo $poke['gender_differences'] ? 'Sì' : 'No'; ?></td>
+                            <td data-label="Mega Evoluzione" class="hide-mobile"><?php echo $poke['has_mega_evolution'] ? 'Sì' : 'No'; ?></td>
+                            <td data-label="Gigamax" class="hide-mobile"><?php echo $poke['has_gigamax'] ? 'Sì' : 'No'; ?></td>
+                            <td data-label="Forma Alpha" class="hide-mobile"><?php echo $poke['alpha'] ? 'Sì' : 'No'; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </main>
 
     <script>
-        // Funzionalità di ricerca Pokémon
         document.getElementById('search').addEventListener('keyup', function() {
-            let filter = this.value.toLowerCase(); // Ottiene il valore del campo di ricerca in minuscolo
-            let rows = document.querySelectorAll('#pokemonTable tbody tr'); // Seleziona tutte le righe della tabella
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('#pokemonTable tbody tr');
 
-            rows.forEach(row => { // Cicla attraverso le righe
-                let name = row.cells[2].textContent.toLowerCase(); // Ottiene il nome del Pokémon in minuscolo
-                row.style.display = name.includes(filter) ? '' : 'none'; // Mostra o nasconde la riga in base al filtro
+            rows.forEach(row => {
+                let name = row.cells[2].textContent.toLowerCase();
+                row.style.display = name.includes(filter) ? '' : 'none';
             });
         });
     </script>
