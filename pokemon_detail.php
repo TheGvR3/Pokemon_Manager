@@ -1,24 +1,25 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include('components/connection.php');
 include('components/queries.php');
 
 try {
-    $id = $_GET['id']; // o da dove recuperi l'id del Pokémon
-    $pokemon_data = []; // Array per raccogliere i dati
+    if (!isset($_GET['id'])) {
+        throw new Exception("ID del Pokémon non fornito");
+    }
+    
+    $id = $_GET['id'];
+    $pokemon_data = [];
 
-    // Usa $sql_total
-    $stmt_total = $conn->prepare($sql_total);
-    $stmt_total->execute();
-    $result_total = $stmt_total->get_result();
-    $row_total = $result_total->fetch_assoc();
-    $totalPokemons = (int)$row_total['total'];
+    $totalPokemons = get_total_pokemon_count($conn);
+    $pokemon_data['base'] = get_pokemon_base_info($conn, $id);
 
-    // Usa $sql_base
-    $stmt_base = $conn->prepare($sql_base);
-    $stmt_base->bind_param("i", $id);
-    $stmt_base->execute();
-    $result_base = $stmt_base->get_result();
-    $pokemon_data['base'] = $result_base->fetch_assoc();
+    if (!$pokemon_data['base']) {
+        throw new Exception("Nessun Pokémon trovato con l'ID fornito");
+    }
 
     $primary_type_gradient = isset($pokemon_data['base']['primary_type_gradient']) ? $pokemon_data['base']['primary_type_gradient']
         : 'linear-gradient(100deg, rgba(203,200,193,1) 0%, rgba(60,67,85,1) 100%)';
@@ -26,71 +27,22 @@ try {
     $primary_type_color_light = isset($pokemon_data['base']['primary_type_color_light']) && !empty($pokemon_data['base']['primary_type_color_light'])
         ? $pokemon_data['base']['primary_type_color_light'] : '#CBC8C1';
 
-    // Usa $sql_types
-    $stmt_types = $conn->prepare($sql_types);
-    $stmt_types->bind_param("i", $id);
-    $stmt_types->execute();
-    $result_types = $stmt_types->get_result();
-    $pokemon_data['types'] = $result_types->fetch_all(MYSQLI_ASSOC);
+    $pokemon_data['types'] = get_pokemon_types($conn, $pokemon_data['base']['id']);
+    $pokemon_data['egg_groups'] = get_pokemon_egg_groups($conn, $pokemon_data['base']['id']);
+    $pokemon_data['abilities'] = get_pokemon_abilities($conn, $pokemon_data['base']['id']);
+    $pokemon_data['evolves_from'] = get_pokemon_pre_evolution($conn, $pokemon_data['base']['id']);
+    $pokemon_data['evolves_to'] = get_pokemon_next_evolution($conn, $pokemon_data['base']['id']);
 
-    // Usa $sql_egg_groups
-    $stmt_egg_groups = $conn->prepare($sql_egg_groups);
-    $stmt_egg_groups->bind_param("i", $id);
-    $stmt_egg_groups->execute();
-    $result_egg_groups = $stmt_egg_groups->get_result();
-    $pokemon_data['egg_groups'] = $result_egg_groups->fetch_all(MYSQLI_ASSOC);
-
-    // Usa $sql_abilities
-    $stmt_abilities = $conn->prepare($sql_abilities);
-    $stmt_abilities->bind_param("i", $id);
-    $stmt_abilities->execute();
-    $result_abilities = $stmt_abilities->get_result();
-    $pokemon_data['abilities'] = $result_abilities->fetch_all(MYSQLI_ASSOC);
-
-    // Usa $sql_evolves_from
-    $stmt_evolves_from = $conn->prepare($sql_evolves_from);
-    $stmt_evolves_from->bind_param("i", $id);
-    $stmt_evolves_from->execute();
-    $result_evolves_from = $stmt_evolves_from->get_result();
-    $pokemon_data['evolves_from'] = $result_evolves_from->fetch_assoc();
-
-    // Usa $sql_evolves_to
-    $stmt_evolves_to = $conn->prepare($sql_evolves_to);
-    $stmt_evolves_to->bind_param("i", $id);
-    $stmt_evolves_to->execute();
-    $result_evolves_to = $stmt_evolves_to->get_result();
-    $pokemon_data['evolves_to'] = $result_evolves_to->fetch_assoc();
-
-    // Verifica se ci sono mega evoluzioni
-    $stmt_check_mega = $conn->prepare($sql_check_mega_evolution);
-    $stmt_check_mega->bind_param("i", $id);
-    $stmt_check_mega->execute();
-    $result_check_mega = $stmt_check_mega->get_result();
-    $has_mega = $result_check_mega->fetch_assoc()['has_mega_evolution'];
-
+    $has_mega = check_mega_evolution($conn, $pokemon_data['base']['id']);
     if ($has_mega) {
-        $stmt_mega = $conn->prepare($sql_mega_evolutions);
-        $stmt_mega->bind_param("i", $id);
-        $stmt_mega->execute();
-        $result_mega = $stmt_mega->get_result();
-        $pokemon_data['mega_evolutions'] = $result_mega->fetch_all(MYSQLI_ASSOC);
+        $pokemon_data['mega_evolutions'] = get_mega_evolutions_info($conn, $pokemon_data['base']['id']);
     } else {
         $pokemon_data['mega_evolutions'] = [];
     }
 
-    // Verifica se ci sono forme Gigamax
-    $stmt_check_gigamax = $conn->prepare($sql_check_gigamax_forms);
-    $stmt_check_gigamax->bind_param("i", $id);
-    $stmt_check_gigamax->execute();
-    $result_check_gigamax = $stmt_check_gigamax->get_result();
-    $has_gigamax = $result_check_gigamax->fetch_assoc()['has_gigamax'];
-
+    $has_gigamax = check_gigamax_forms($conn, $pokemon_data['base']['id']);
     if ($has_gigamax) {
-        $stmt_gigamax = $conn->prepare($sql_get_gigamax_forms);
-        $stmt_gigamax->bind_param("i", $id);
-        $stmt_gigamax->execute();
-        $result_gigamax = $stmt_gigamax->get_result();
-        $pokemon_data['gigamax'] = $result_gigamax->fetch_all(MYSQLI_ASSOC);
+        $pokemon_data['gigamax'] = get_gigamax_forms($conn, $pokemon_data['base']['id']);
     } else {
         $pokemon_data['gigamax'] = [];
     }
@@ -100,13 +52,13 @@ try {
     $pokemon_data['base']['has_regional_form'] = false; // Aggiorna in base alla tua logica
 
 } catch (Exception $e) {
-    echo $e->getMessage();
+    echo "Si è verificato un errore: " . $e->getMessage();
+    exit;
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,11 +67,10 @@ try {
     <link rel="stylesheet" href="assets/css/menu.css">
     <link rel="stylesheet" href="assets/css/pokemon_details.css">
 </head>
-
 <body>
     <?php include('components/menu.php'); ?>
 
-    <div class="container" style="background: <?php echo !empty($primary_type_color_light) ? htmlspecialchars($primary_type_color_light) : 'linear-gradient(to right, #ffcc00, #ff9900)'; ?>;">
+    <div class="container" style="background: <?php echo htmlspecialchars($primary_type_color_light); ?>;">
         <!-- Navigation for Previous and Next Pokémon -->
         <div class="navigation">
             <?php if ($pokemon_data['base']['national_pokedex_number'] > 1): ?>
@@ -353,5 +304,4 @@ try {
     </div>
 
 </body>
-
 </html>

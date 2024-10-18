@@ -1,3 +1,24 @@
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+include('components/connection.php');
+include('components/queries.php');
+
+try {
+    $pokemonDelGiorno = get_random_pokemon($conn);
+
+    if (!$pokemonDelGiorno) {
+        throw new Exception("Nessun Pokémon casuale trovato");
+    }
+
+} catch (Exception $e) {
+    echo "Si è verificato un errore: " . $e->getMessage();
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,11 +32,7 @@
 </head>
 
 <body>
-    <?php
-    include('components/connection.php');
-    include('components/queries.php');
-    include('components/menu.php');
-    ?>
+    <?php include('components/menu.php'); ?>
 
     <div class="content">
         <div class="news">
@@ -54,49 +71,39 @@
             </div>
 
             <div class="pokemon-del-giorno">
-                <?php
-                // Query per ottenere un Pokémon casuale + Tipo
-                $stmt = $conn->query($sql_random_pokemon);
-                $pokemonDelGiorno = $stmt->fetch_assoc();
-                ?>
-
                 <h2>Lucky Pokémon!</h2>
                 <div class="box">
-                    <?php if ($pokemonDelGiorno): ?>
-                        <p><strong>#<?php echo htmlspecialchars($pokemonDelGiorno['national_pokedex_number']); ?></strong> - <?php echo htmlspecialchars($pokemonDelGiorno['name']); ?></p>
-                        <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($pokemonDelGiorno['national_pokedex_number']); ?>">
-                            <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($pokemonDelGiorno['img']); ?>" alt="<?php echo htmlspecialchars($pokemonDelGiorno['name']); ?>" class="day-pokemon-img">
-                        </a>
-                        <div class="type_box">
-                            <?php
-                            $typeNames = explode(',', $pokemonDelGiorno['type_names']); // Nomi dei tipi
-                            $typeImages = explode(',', $pokemonDelGiorno['type_name_imgs']); // Immagini dei tipi
-                            $typePositions = explode(',', $pokemonDelGiorno['type_positions']); // Posizioni dei tipi
+                    <p><strong>#<?php echo htmlspecialchars($pokemonDelGiorno['national_pokedex_number']); ?></strong> - <?php echo htmlspecialchars($pokemonDelGiorno['name']); ?></p>
+                    <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($pokemonDelGiorno['national_pokedex_number']); ?>">
+                        <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($pokemonDelGiorno['img']); ?>" alt="<?php echo htmlspecialchars($pokemonDelGiorno['name']); ?>" class="day-pokemon-img">
+                    </a>
+                    <div class="type_box">
+                        <?php
+                        $typeNames = explode(',', $pokemonDelGiorno['type_names']);
+                        $typeImages = explode(',', $pokemonDelGiorno['type_name_imgs']);
+                        $typePositions = explode(',', $pokemonDelGiorno['type_positions']);
 
-                            $types = [];
-                            foreach ($typeNames as $index => $name) {
-                                $types[] = [
-                                    'name' => $name,
-                                    'image' => $typeImages[$index],
-                                    'position' => $typePositions[$index]
-                                ];
-                            }
+                        $types = [];
+                        foreach ($typeNames as $index => $name) {
+                            $types[] = [
+                                'name' => $name,
+                                'image' => $typeImages[$index],
+                                'position' => $typePositions[$index]
+                            ];
+                        }
 
-                            usort($types, function ($a, $b) {
-                                return ($a['position'] === 'primary' ? 0 : 1) - ($b['position'] === 'primary' ? 0 : 1);
-                            });
+                        usort($types, function ($a, $b) {
+                            return ($a['position'] === 'primary' ? 0 : 1) - ($b['position'] === 'primary' ? 0 : 1);
+                        });
 
-                            foreach ($types as $type): ?>
-                                <div class="poke-type">
-                                    <img src="assets/images/type/<?php echo htmlspecialchars($type['image']); ?>"
-                                        alt="Tipo <?php echo htmlspecialchars($type['name']); ?>"
-                                        class="type-image">
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <p>Nessun Pokémon trovato.</p>
-                    <?php endif; ?>
+                        foreach ($types as $type): ?>
+                            <div class="poke-type">
+                                <img src="assets/images/type/<?php echo htmlspecialchars($type['image']); ?>"
+                                    alt="Tipo <?php echo htmlspecialchars($type['name']); ?>"
+                                    class="type-image">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </div>

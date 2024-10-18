@@ -1,35 +1,22 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include('components/connection.php');
 include('components/queries.php');
-// Query per ottenere tutti i dati dalla tabella pokemon con i tipi e le icone
-$sql = '
-    SELECT p.*, 
-        GROUP_CONCAT(DISTINCT t.type_icon ORDER BY pt.type_position) as type_icons, 
-        GROUP_CONCAT(DISTINCT t.type_name ORDER BY pt.type_position) as type_names,
-        GROUP_CONCAT(DISTINCT a.ability_name) as abilities,
-        EXISTS(SELECT 1 FROM pokemon_mega_evolutions me WHERE me.pokemon_id = p.id) as has_mega_evolution,
-        EXISTS(SELECT 1 FROM pokemon_gigamax g WHERE g.pokemon_id = p.id) as has_gigamax
-    FROM pokemon p
-    JOIN pokemon_types pt ON p.id = pt.pokemon_id
-    JOIN types t ON pt.type_id = t.id
-    JOIN pokemon_abilities pa ON p.id = pa.pokemon_id
-    JOIN abilities a ON pa.ability_id = a.id
-    GROUP BY p.id
-';
 
-// Esegui la query
-$result = $conn->query($sql);
+try {
+    $pokemon = get_all_pokemon_list($conn);
 
-// Controlla se ci sono risultati
-if ($result === false) {
-    die("Errore nella query: " . $conn->error);
+    if (empty($pokemon)) {
+        throw new Exception("Nessun Pokémon trovato");
+    }
+
+} catch (Exception $e) {
+    echo "Si è verificato un errore: " . $e->getMessage();
+    exit;
 }
-
-// Recupera tutti i Pokémon
-$pokemon = $result->fetch_all(MYSQLI_ASSOC);
-
-// Chiudi la connessione
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -69,59 +56,53 @@ $conn->close();
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($pokemon)): ?>
-                    <?php foreach ($pokemon as $poke): ?>
-                        <tr>
-                            <td>
-                                <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
-                                    <?php echo htmlspecialchars($poke['national_pokedex_number']); ?>
-                                </a>
-                            </td>
-                            <td class="pokemonIcon">
-                                <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
-                                    <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($poke['pokemon_icon']); ?>" alt="<?php echo htmlspecialchars($poke['name']); ?>" class="pokemonIcon">
-                                </a>
-                            </td>
-                            <td>
-                                <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
-                                    <?php echo htmlspecialchars($poke['name']); ?>
-                                </a>
-                            </td>
-                            <td>
-                                <?php
-                                $type_icons = explode(',', $poke['type_icons']);
-                                foreach ($type_icons as $icon):
-                                    echo '<img src="assets/images/type/' . htmlspecialchars($icon) . '" alt="Tipo" class="type-image">'; // Corretto il percorso delle icone dei tipi
-                                endforeach;
-                                ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($poke['category']); ?></td>
-                            <td>
-                                <?php
-                                $abilities = explode(',', $poke['abilities']); // Divide le abilità in un array
-                                $abilitiesHtml = [];
-
-                                foreach ($abilities as $index => $ability) {
-                                    $abilitiesHtml[] = htmlspecialchars($ability) . ($index < count($abilities) - 1 ? ',' : '');
-                                }
-
-                                echo implode('<br>', $abilitiesHtml); // Mostra le abilità separate da un a capo
-                                ?>
-                            </td>
-
-                            <td><?php echo htmlspecialchars($poke['gender_differences'] ? 'Yes' : 'No'); ?></td>
-
-                            <td><?php echo htmlspecialchars($poke['has_mega_evolution'] ? 'Yes' : 'No'); ?></td> <!-- Mostra se ha megaevoluzione -->
-                            <td><?php echo htmlspecialchars($poke['has_gigamax'] ? 'Yes' : 'No'); ?></td> <!-- Mostra se ha gigamax -->
-                            <td><?php echo htmlspecialchars($poke['alpha'] ? 'Yes' : 'No'); ?></td>
-                            <td><?php echo htmlspecialchars($poke['base_stats']); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+                <?php foreach ($pokemon as $poke): ?>
                     <tr>
-                        <td colspan="11">Nessun Pokémon trovato.</td>
+                        <td>
+                            <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
+                                <?php echo htmlspecialchars($poke['national_pokedex_number']); ?>
+                            </a>
+                        </td>
+                        <td class="pokemonIcon">
+                            <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
+                                <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($poke['pokemon_icon']); ?>" alt="<?php echo htmlspecialchars($poke['name']); ?>" class="pokemonIcon">
+                            </a>
+                        </td>
+                        <td>
+                            <a href="pokemon_detail.php?id=<?php echo htmlspecialchars($poke['national_pokedex_number']); ?>" class="name">
+                                <?php echo htmlspecialchars($poke['name']); ?>
+                            </a>
+                        </td>
+                        <td>
+                            <?php
+                            $type_icons = explode(',', $poke['type_icons']);
+                            foreach ($type_icons as $icon):
+                                echo '<img src="assets/images/type/' . htmlspecialchars($icon) . '" alt="Tipo" class="type-image">'; // Corretto il percorso delle icone dei tipi
+                            endforeach;
+                            ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($poke['category']); ?></td>
+                        <td>
+                            <?php
+                            $abilities = explode(',', $poke['abilities']); // Divide le abilità in un array
+                            $abilitiesHtml = [];
+
+                            foreach ($abilities as $index => $ability) {
+                                $abilitiesHtml[] = htmlspecialchars($ability) . ($index < count($abilities) - 1 ? ',' : '');
+                            }
+
+                            echo implode('<br>', $abilitiesHtml); // Mostra le abilità separate da un a capo
+                            ?>
+                        </td>
+
+                        <td><?php echo htmlspecialchars($poke['gender_differences'] ? 'Yes' : 'No'); ?></td>
+
+                        <td><?php echo htmlspecialchars($poke['has_mega_evolution'] ? 'Yes' : 'No'); ?></td> <!-- Mostra se ha megaevoluzione -->
+                        <td><?php echo htmlspecialchars($poke['has_gigamax'] ? 'Yes' : 'No'); ?></td> <!-- Mostra se ha gigamax -->
+                        <td><?php echo htmlspecialchars($poke['alpha'] ? 'Yes' : 'No'); ?></td>
+                        <td><?php echo htmlspecialchars($poke['base_stats']); ?></td>
                     </tr>
-                <?php endif; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
