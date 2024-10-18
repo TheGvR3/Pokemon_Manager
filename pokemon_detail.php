@@ -1,286 +1,105 @@
 <?php
 include('components/connection.php');
+include('components/queries.php');
 
 try {
-    // 0. Query per ottenere il numero totale di Pokémon
-    $sql_total = "SELECT COUNT(*) AS total FROM pokemon";
+    $id = $_GET['id']; // o da dove recuperi l'id del Pokémon
+    $pokemon_data = []; // Array per raccogliere i dati
+
+    // Usa $sql_total
     $stmt_total = $conn->prepare($sql_total);
     $stmt_total->execute();
     $result_total = $stmt_total->get_result();
     $row_total = $result_total->fetch_assoc();
-    $totalPokemons = (int)$row_total['total']; // Inizializza la variabile con il totale
+    $totalPokemons = (int)$row_total['total'];
 
-    // Presupponendo che tu abbia già la connessione al database attiva in $conn
-    $id = $_GET['id']; // o da dove recuperi l'id del Pokémon
-    $pokemon_data = []; // Array per raccogliere i dati
-
-    // ... il resto del tuo codice
-
-    // 1. Query base per i dettagli del Pokémon
-    $sql_base = "
-    SELECT pokemon.*, 
-        pokemon_base_stats.hp,
-        pokemon_base_stats.attack,
-        pokemon_base_stats.defence,
-        pokemon_base_stats.sp_attack,
-        pokemon_base_stats.sp_defence,
-        pokemon_base_stats.speed,
-        levelling_rate.exp_tot AS exp_tot,
-        primary_type_colors.type_color AS primary_type_color,  
-        primary_type_colors.gradient_color AS primary_type_gradient,
-        primary_type_colors.type_color_light AS primary_type_color_light
-    FROM pokemon
-    JOIN pokemon_base_stats ON pokemon.id = pokemon_base_stats.pokemon_id
-    JOIN levelling_rate ON pokemon.levelling_rate = levelling_rate.name
-    LEFT JOIN pokemon_types AS primary_type ON pokemon.id = primary_type.pokemon_id 
-        AND primary_type.type_position = 'primary'  
-    LEFT JOIN types AS primary_type_colors ON primary_type.type_id = primary_type_colors.id  
-    WHERE pokemon.national_pokedex_number = ?
-";
-
-
-
-    // Prepara e esegui la query base
+    // Usa $sql_base
     $stmt_base = $conn->prepare($sql_base);
     $stmt_base->bind_param("i", $id);
     $stmt_base->execute();
     $result_base = $stmt_base->get_result();
-    $pokemon_data['base'] = $result_base->fetch_assoc(); // Salva i dati di base
+    $pokemon_data['base'] = $result_base->fetch_assoc();
 
     $primary_type_gradient = isset($pokemon_data['base']['primary_type_gradient']) ? $pokemon_data['base']['primary_type_gradient']
-        : 'linear-gradient(100deg, rgba(203,200,193,1) 0%, rgba(60,67,85,1) 100%)'; // Colore di fallback
+        : 'linear-gradient(100deg, rgba(203,200,193,1) 0%, rgba(60,67,85,1) 100%)';
 
     $primary_type_color_light = isset($pokemon_data['base']['primary_type_color_light']) && !empty($pokemon_data['base']['primary_type_color_light'])
         ? $pokemon_data['base']['primary_type_color_light'] : '#CBC8C1';
 
-    // 2. Query per i tipi del Pokémon
-    $sql_types = "
-    SELECT types.type_name, types.type_name_img, pokemon_types.type_position
-    FROM pokemon_types
-    JOIN types ON pokemon_types.type_id = types.id
-    WHERE pokemon_types.pokemon_id = ?
-    ORDER BY pokemon_types.type_position;
-";
-
-    // Prepara e esegui la query per i tipi
+    // Usa $sql_types
     $stmt_types = $conn->prepare($sql_types);
     $stmt_types->bind_param("i", $id);
     $stmt_types->execute();
     $result_types = $stmt_types->get_result();
-    $pokemon_data['types'] = $result_types->fetch_all(MYSQLI_ASSOC); // Salva i tipi del Pokémon
+    $pokemon_data['types'] = $result_types->fetch_all(MYSQLI_ASSOC);
 
-    // Query per gli egg groups
-    $sql_egg_groups = "
-    SELECT egg_groups.group_name
-    FROM pokemon_egg_groups
-    JOIN egg_groups ON pokemon_egg_groups.egg_group_id = egg_groups.id
-    WHERE pokemon_egg_groups.pokemon_id = ?
-";
-
-    // Prepara e esegui la query per gli egg groups
+    // Usa $sql_egg_groups
     $stmt_egg_groups = $conn->prepare($sql_egg_groups);
-    $stmt_egg_groups->bind_param("i", $id); // Associa l'ID del Pokémon
+    $stmt_egg_groups->bind_param("i", $id);
     $stmt_egg_groups->execute();
     $result_egg_groups = $stmt_egg_groups->get_result();
-    $pokemon_data['egg_groups'] = $result_egg_groups->fetch_all(MYSQLI_ASSOC); // Salva i gruppi uova
+    $pokemon_data['egg_groups'] = $result_egg_groups->fetch_all(MYSQLI_ASSOC);
 
-
-    // 3. Query per le abilità del Pokémon
-    $sql_abilities = "
-    SELECT abilities.ability_name, abilities.ability_description, pokemon_abilities.ability_type
-    FROM pokemon_abilities
-    JOIN abilities ON pokemon_abilities.ability_id = abilities.id
-    WHERE pokemon_abilities.pokemon_id = ?
-    ORDER BY pokemon_abilities.ability_type;
-";
-
-    // Prepara e esegui la query per le abilità
+    // Usa $sql_abilities
     $stmt_abilities = $conn->prepare($sql_abilities);
     $stmt_abilities->bind_param("i", $id);
     $stmt_abilities->execute();
     $result_abilities = $stmt_abilities->get_result();
-    $pokemon_data['abilities'] = $result_abilities->fetch_all(MYSQLI_ASSOC); // Salva le abilità
+    $pokemon_data['abilities'] = $result_abilities->fetch_all(MYSQLI_ASSOC);
 
-    // 4. Query per l'evoluzione precedente (da)
-    $sql_evolves_from = "
-    SELECT evolves_from_pokemon.name AS evolves_from_pokemon_name, 
-        evolves_from_pokemon.pokemon_icon AS evolves_from_pokemon_icon,
-        pokemon_evolutions.description AS evolves_from_description,
-        evolves_from_pokemon.id AS evolves_from_pokemon_id
-    FROM pokemon_evolutions
-    JOIN pokemon AS evolves_from_pokemon ON pokemon_evolutions.pokemon_id = evolves_from_pokemon.id
-    WHERE pokemon_evolutions.evolves_to_pokemon_id = ?;
-";
-
-    // Prepara e esegui la query per l'evoluzione precedente
+    // Usa $sql_evolves_from
     $stmt_evolves_from = $conn->prepare($sql_evolves_from);
     $stmt_evolves_from->bind_param("i", $id);
     $stmt_evolves_from->execute();
     $result_evolves_from = $stmt_evolves_from->get_result();
-    $pokemon_data['evolves_from'] = $result_evolves_from->fetch_assoc(); // Salva l'evoluzione precedente
+    $pokemon_data['evolves_from'] = $result_evolves_from->fetch_assoc();
 
-    // 5. Query per l'evoluzione successiva (a)
-    $sql_evolves_to = "
-    SELECT evolves_to_pokemon.name AS evolves_to_pokemon_name, 
-        evolves_to_pokemon.pokemon_icon AS evolves_to_pokemon_icon,
-        pokemon_evolutions_evolve_to.description AS evolves_to_description,
-        evolves_to_pokemon.id AS evolves_to_pokemon_id
-    FROM pokemon_evolutions AS pokemon_evolutions_evolve_to
-    JOIN pokemon AS evolves_to_pokemon ON pokemon_evolutions_evolve_to.evolves_to_pokemon_id = evolves_to_pokemon.id
-    WHERE pokemon_evolutions_evolve_to.pokemon_id = ?;
-";
-
-    // Prepara e esegui la query per l'evoluzione successiva
+    // Usa $sql_evolves_to
     $stmt_evolves_to = $conn->prepare($sql_evolves_to);
     $stmt_evolves_to->bind_param("i", $id);
     $stmt_evolves_to->execute();
     $result_evolves_to = $stmt_evolves_to->get_result();
-    $pokemon_data['evolves_to'] = $result_evolves_to->fetch_assoc(); // Salva l'evoluzione successiva
-
-
-    // Query per ottenere i dati del Pokémon e verificare le mega evoluzioni
-    $sql = "
-SELECT 
-    pokemon.*, 
-    EXISTS(SELECT 1 FROM pokemon_mega_evolutions WHERE pokemon_mega_evolutions.pokemon_id = pokemon.id) AS has_mega_evolution
-FROM 
-    pokemon 
-WHERE 
-    pokemon.id = ?";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $poke = $result->fetch_assoc();
+    $pokemon_data['evolves_to'] = $result_evolves_to->fetch_assoc();
 
     // Verifica se ci sono mega evoluzioni
-    if (!empty($poke['has_mega_evolution'])) {
-        // Query per le mega evoluzioni
-        $sql_mega_evolutions = "
-    SELECT 
-        mega_evolutions.mega_evolution_name, 
-        mega_evolutions.img, 
-        mega_evolutions.ability_id, 
-        mega_evolutions.item, 
-        mega_evolutions.base_stats, 
-        mega_evolutions.hp, 
-        mega_evolutions.attack, 
-        mega_evolutions.defence, 
-        mega_evolutions.sp_attack, 
-        mega_evolutions.sp_defence, 
-        mega_evolutions.speed,
-        mega_evolutions.gradient_color, -- Fetch gradient color directly from mega_evolutions
-        GROUP_CONCAT(types.type_name SEPARATOR ', ') AS type_names,
-        GROUP_CONCAT(types.type_name_img SEPARATOR ', ') AS type_images,
-        abilities.ability_name AS mega_ability_name,
-        abilities.ability_description AS mega_ability_description
-    FROM 
-        pokemon_mega_evolutions
-    JOIN 
-        mega_evolutions ON pokemon_mega_evolutions.mega_id = mega_evolutions.id
-    LEFT JOIN 
-        mega_evolution_type ON mega_evolution_type.mega_evolution_id = mega_evolutions.id
-    LEFT JOIN 
-        types ON mega_evolution_type.type_id = types.id
-    LEFT JOIN 
-        abilities ON mega_evolutions.ability_id = abilities.id
-    WHERE 
-        pokemon_mega_evolutions.pokemon_id = ?
-    GROUP BY 
-        mega_evolutions.id";
+    $stmt_check_mega = $conn->prepare($sql_check_mega_evolution);
+    $stmt_check_mega->bind_param("i", $id);
+    $stmt_check_mega->execute();
+    $result_check_mega = $stmt_check_mega->get_result();
+    $has_mega = $result_check_mega->fetch_assoc()['has_mega_evolution'];
 
-        // Prepara e esegui la query per le mega evoluzioni
+    if ($has_mega) {
         $stmt_mega = $conn->prepare($sql_mega_evolutions);
         $stmt_mega->bind_param("i", $id);
         $stmt_mega->execute();
         $result_mega = $stmt_mega->get_result();
-
-        // Salva le mega evoluzioni
         $pokemon_data['mega_evolutions'] = $result_mega->fetch_all(MYSQLI_ASSOC);
     } else {
-        $pokemon_data['mega_evolutions'] = []; // Nessuna mega evoluzione disponibile
+        $pokemon_data['mega_evolutions'] = [];
     }
 
+    // Verifica se ci sono forme Gigamax
+    $stmt_check_gigamax = $conn->prepare($sql_check_gigamax_forms);
+    $stmt_check_gigamax->bind_param("i", $id);
+    $stmt_check_gigamax->execute();
+    $result_check_gigamax = $stmt_check_gigamax->get_result();
+    $has_gigamax = $result_check_gigamax->fetch_assoc()['has_gigamax'];
 
-
-
-
-
-    // Query per ottenere i dati del Pokémon e verificare le forme Gigamax
-    $sql = "
-SELECT 
-    pokemon.*, 
-    EXISTS(SELECT 1 FROM pokemon_gigamax WHERE pokemon_gigamax.pokemon_id = pokemon.id) AS has_gigamax
-FROM 
-    pokemon 
-WHERE 
-    pokemon.id = ?";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $poke = $result->fetch_assoc();
-
-    // Esegui la query per ottenere le informazioni sul Pokémon
-    $sql = "
-SELECT 
-    id,
-    EXISTS(SELECT 1 FROM pokemon_gigamax WHERE pokemon_gigamax.pokemon_id = pokemon.id) AS has_gigamax
-FROM 
-    pokemon
-WHERE 
-    id = ?";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $poke = $result->fetch_assoc();
-
-        // Verifica se ci sono forme Gigamax
-        if (!empty($poke['has_gigamax'])) {
-            // Query per le forme Gigamax
-            $sql_gigamax = "
-    SELECT 
-        pokemon_gigamax.gigamax_form_name, 
-        pokemon_gigamax.img
-    FROM 
-        pokemon_gigamax
-    WHERE 
-        pokemon_gigamax.pokemon_id = ?";
-
-            // Prepara e esegui la query per le forme Gigamax
-            $stmt_gigamax = $conn->prepare($sql_gigamax);
-            $stmt_gigamax->bind_param("i", $id);
-            $stmt_gigamax->execute();
-            $result_gigamax = $stmt_gigamax->get_result();
-
-            // Stampa di debug per le forme Gigamax
-            if ($result_gigamax->num_rows > 0) {
-                $pokemon_data['gigamax'] = $result_gigamax->fetch_all(MYSQLI_ASSOC);
-            } else {
-                $pokemon_data['gigamax'] = []; // Nessuna forma Gigamax disponibile
-                echo "Nessuna forma Gigamax trovata.";
-            }
-        } else {
-            $pokemon_data['gigamax'] = []; // Nessuna forma Gigamax disponibile
-        }
+    if ($has_gigamax) {
+        $stmt_gigamax = $conn->prepare($sql_get_gigamax_forms);
+        $stmt_gigamax->bind_param("i", $id);
+        $stmt_gigamax->execute();
+        $result_gigamax = $stmt_gigamax->get_result();
+        $pokemon_data['gigamax'] = $result_gigamax->fetch_all(MYSQLI_ASSOC);
     } else {
-        echo "Nessun Pokémon trovato.";
+        $pokemon_data['gigamax'] = [];
     }
-
-
 
     $pokemon_data['base']['has_mega_evolution'] = !empty($pokemon_data['mega_evolutions']);
     $pokemon_data['base']['has_gigamax'] = !empty($pokemon_data['gigamax']);
     $pokemon_data['base']['has_regional_form'] = false; // Aggiorna in base alla tua logica
 
 } catch (Exception $e) {
-    // Gestisce altre eccezioni
     echo $e->getMessage();
 }
 ?>

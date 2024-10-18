@@ -13,6 +13,7 @@
 <body>
     <?php
     include('components/connection.php');
+    include('components/queries.php');
     include('components/menu.php');
     ?>
 
@@ -55,17 +56,7 @@
             <div class="pokemon-del-giorno">
                 <?php
                 // Query per ottenere un Pokémon casuale + Tipo
-                $stmt = $conn->query('SELECT p.*, 
-                GROUP_CONCAT(DISTINCT t.type_name) AS type_names, 
-                GROUP_CONCAT(DISTINCT t.type_name_img) AS type_name_imgs,
-                GROUP_CONCAT(DISTINCT pt.type_position) AS type_positions
-                FROM pokemon p
-                JOIN pokemon_types pt ON p.id = pt.pokemon_id
-                JOIN types t ON pt.type_id = t.id
-                GROUP BY p.id
-                ORDER BY RAND()
-                LIMIT 1;
-            ');
+                $stmt = $conn->query($sql_random_pokemon);
                 $pokemonDelGiorno = $stmt->fetch_assoc();
                 ?>
 

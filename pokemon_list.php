@@ -1,6 +1,6 @@
 <?php
 include('components/connection.php');
-
+include('components/queries.php');
 // Query per ottenere tutti i dati dalla tabella pokemon con i tipi e le icone
 $sql = '
     SELECT p.*, 
