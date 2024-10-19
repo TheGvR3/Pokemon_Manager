@@ -248,7 +248,7 @@ try {
                     <div class="mega-evolutions-container">
                         <?php foreach ($pokemon_data['mega_evolutions'] as $mega): ?>
                             <div class="mega-evolution" style="background: <?php echo !empty($mega['gradient_color']) ? htmlspecialchars($mega['gradient_color']) : 'linear-gradient(151deg, rgba(235,18,157,0.3) 0%, rgba(236,83,23,0.3) 13%, rgba(241,252,48,0.3) 33%, rgba(230,248,48,0.3) 45%, rgba(27,185,47,0.3) 71%, rgba(41,219,230,0.3) 91%), white;'; ?>;">
-                                <p><?php echo htmlspecialchars($mega['mega_evolution_name']); ?></p>
+                                <h3><strong><?php echo htmlspecialchars($mega['mega_evolution_name']); ?></strong></h3>
                                 <img src="assets/images/megaEvolutions/<?php echo htmlspecialchars($mega['img']); ?>" alt="<?php echo htmlspecialchars($mega['mega_evolution_name']); ?>" class="mega-img">
                                 <div class="mega-types">
                                     <?php
