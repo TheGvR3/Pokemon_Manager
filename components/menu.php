@@ -11,3 +11,10 @@
         <a href="#">Contatti</a>
     </div>
 </nav>
+
+<script>
+function toggleMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('active');
+}
+</script>

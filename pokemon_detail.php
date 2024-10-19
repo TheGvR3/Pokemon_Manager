@@ -10,7 +10,7 @@ try {
     if (!isset($_GET['id'])) {
         throw new Exception("ID del Pokémon non fornito");
     }
-    
+
     $id = $_GET['id'];
     $pokemon_data = [];
 
@@ -59,6 +59,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,6 +68,7 @@ try {
     <link rel="stylesheet" href="assets/css/menu.css">
     <link rel="stylesheet" href="assets/css/pokemon_details.css">
 </head>
+
 <body>
     <?php include('components/menu.php'); ?>
 
@@ -98,51 +100,96 @@ try {
             </h1>
             <p class="gen"><strong>Generation:</strong> <?php echo htmlspecialchars($pokemon_data['base']['gen_of_introduction']); ?></p>
             <div class="img-box">
-                <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($pokemon_data['base']['img']); ?>" alt="<?php echo htmlspecialchars($pokemon_data['base']['name']); ?>" class="poke-img">
-                <p>
-                    <strong>Category:</strong> <?php echo htmlspecialchars($pokemon_data['base']['category']); ?> <br>
+                <div>
+                    <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($pokemon_data['base']['img']); ?>" alt="<?php echo htmlspecialchars($pokemon_data['base']['name']); ?>" class="poke-img">
+                    <div class="poke-type">
+                        <p><strong>Type:</strong></p>
+                        <?php foreach ($pokemon_data['types'] as $type): ?>
+                            <div class="poke-type">
+                                <img src="assets/images/type/<?php echo htmlspecialchars($type['type_name_img']); ?>" alt="Type <?php echo htmlspecialchars($type['type_name']); ?>" class="type-image">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
 
-                    <strong>Egg Group:</strong>
-                    <?php
-                    if (!empty($pokemon_data['egg_groups'])) {
-                        // Crea un array temporaneo per raccogliere i nomi dei gruppi uova
-                        $egg_group_names = [];
+                <div class="info-list">
+                    <div class="ability-box">
+                        <p><strong>Abilities:</strong>
+                            <?php
+                            if (!empty($pokemon_data['abilities'])) {
+                                // Crea un array per raccogliere i nomi e descrizioni delle abilità
+                                $ability_details = [];
 
-                        // Itera attraverso i gruppi uova e aggiungi il nome all'array
-                        foreach ($pokemon_data['egg_groups'] as $egg_group) {
-                            $egg_group_names[] = htmlspecialchars($egg_group['group_name']);
-                        }
+                                // Itera attraverso le abilità e crea stringhe con nome, tipo e descrizione
+                                foreach ($pokemon_data['abilities'] as $ability) {
+                                    $ability_name = htmlspecialchars($ability['ability_name']);
+                                    $ability_type = ucfirst(htmlspecialchars($ability['ability_type'])); // Prima lettera maiuscola
+                                    $ability_description = htmlspecialchars($ability['ability_description']); // Ottieni la descrizione
 
-                        // Unisci i nomi dei gruppi uova separandoli con una virgola e uno spazio
-                        echo implode(', ', $egg_group_names);
-                    } else {
-                        // Messaggio di fallback se non ci sono gruppi uova
-                        echo "N/A";
-                    }
-                    ?>
-                    <br>
+                                    // Unisci il nome dell'abilità e il suo tipo, aggiungi la descrizione in un attributo data
+                                    $ability_details[] = "<span class='ability' data-description='" . $ability_description . "'>$ability_name ($ability_type)</span>";
+                                }
 
-                    <strong>Levelling Rate:</strong>
-                    <span class="levelling-rate-name" data-tooltip="EXP: <?php echo htmlspecialchars($pokemon_data['base']['exp_tot']); ?>">
-                        <?php echo htmlspecialchars($pokemon_data['base']['levelling_rate']); ?>
-                    </span><br> <br>
+                                // Unisci i dettagli delle abilità con una virgola e uno spazio
+                                echo implode(', ', $ability_details);
+                            } else {
+                                // Messaggio di fallback se non ci sono abilità
+                                echo "N/A";
+                            }
+                            ?>
+                            <br>
+                        </p>
 
-                    <strong>Weight:</strong> <?php echo htmlspecialchars($pokemon_data['base']['weight']); ?> kg <br>
-                    <strong>Height:</strong> <?php echo htmlspecialchars($pokemon_data['base']['height']); ?> m <br><br>
+                        <div class="info-p">
+                            <p><strong>Levelling Rate:</strong>
+                                <span class="levelling-rate-name" data-tooltip="EXP: <?php echo htmlspecialchars($pokemon_data['base']['exp_tot']); ?>">
+                                    <?php echo htmlspecialchars($pokemon_data['base']['levelling_rate']); ?>
+                                </span>
+                            </p>
 
-                    <strong>Gender Difference:</strong> <?php echo htmlspecialchars($pokemon_data['base']['gender_differences'] ? 'Yes' : 'No'); ?> <br>
+                            <p><strong>Category:</strong> <?php echo htmlspecialchars($pokemon_data['base']['category']); ?> </p>
 
-                    <strong>Mega Evolution:</strong>
-                    <?php echo htmlspecialchars(isset($pokemon_data['base']['has_mega_evolution']) ? ($pokemon_data['base']['has_mega_evolution'] ? 'Yes' : 'No') : 'No'); ?> <br>
+                            <p><strong>Egg Group:</strong>
+                                <?php
+                                if (!empty($pokemon_data['egg_groups'])) {
+                                    // Crea un array temporaneo per raccogliere i nomi dei gruppi uova
+                                    $egg_group_names = [];
 
-                    <strong>Gigantamax:</strong>
-                    <?php echo htmlspecialchars(isset($pokemon_data['base']['has_gigamax']) ? ($pokemon_data['base']['has_gigamax'] ? 'Yes' : 'No') : 'No'); ?> <br>
+                                    // Itera attraverso i gruppi uova e aggiungi il nome all'array
+                                    foreach ($pokemon_data['egg_groups'] as $egg_group) {
+                                        $egg_group_names[] = htmlspecialchars($egg_group['group_name']);
+                                    }
 
-                    <strong>Regional:</strong>
-                    <?php echo htmlspecialchars(isset($pokemon_data['base']['has_regional_form']) ? ($pokemon_data['base']['has_regional_form'] ? 'Yes' : 'No') : 'No'); ?><br>
+                                    // Unisci i nomi dei gruppi uova separandoli con una virgola e uno spazio
+                                    echo implode(', ', $egg_group_names);
+                                } else {
+                                    // Messaggio di fallback se non ci sono gruppi uova
+                                    echo "N/A";
+                                }
+                                ?></p><br>
+                        </div>
 
-                    <strong>Alpha:</strong> <?php echo htmlspecialchars($pokemon_data['base']['alpha'] ? 'Yes' : 'No'); ?>
-                </p>
+                        <div class="info-p">
+                            <p><strong>Weight:</strong> <?php echo htmlspecialchars($pokemon_data['base']['weight']); ?> kg </p>
+                            <p><strong>Height:</strong> <?php echo htmlspecialchars($pokemon_data['base']['height']); ?> m </p><br>
+                        </div>
+
+                        <div class="info-p">
+                            <p><strong>Gender Difference:</strong> <?php echo htmlspecialchars($pokemon_data['base']['gender_differences'] ? 'Yes' : 'No'); ?> </p>
+                            <p><strong>Mega Evolution:</strong>
+                                <?php echo htmlspecialchars(isset($pokemon_data['base']['has_mega_evolution']) ? ($pokemon_data['base']['has_mega_evolution'] ? 'Yes' : 'No') : 'No'); ?> </p>
+                            <p><strong>Gigantamax:</strong>
+                                <?php echo htmlspecialchars(isset($pokemon_data['base']['has_gigamax']) ? ($pokemon_data['base']['has_gigamax'] ? 'Yes' : 'No') : 'No'); ?> </p>
+                            <p><strong>Regional:</strong>
+                                <?php echo htmlspecialchars(isset($pokemon_data['base']['has_regional_form']) ? ($pokemon_data['base']['has_regional_form'] ? 'Yes' : 'No') : 'No'); ?></p>
+                            <p><strong>Alpha:</strong> <?php echo htmlspecialchars($pokemon_data['base']['alpha'] ? 'Yes' : 'No'); ?></p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
 
 
             </div>
@@ -179,42 +226,6 @@ try {
         </div>
 
         <div class="poke-info">
-            <div class="poke-type">
-                <p><strong>Type:</strong></p>
-                <?php foreach ($pokemon_data['types'] as $type): ?>
-                    <div class="poke-type">
-                        <img src="assets/images/type/<?php echo htmlspecialchars($type['type_name_img']); ?>" alt="Type <?php echo htmlspecialchars($type['type_name']); ?>" class="type-image">
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-            <div class="ability-box">
-                <p><strong>Abilities:</strong>
-                    <?php
-                    if (!empty($pokemon_data['abilities'])) {
-                        // Crea un array per raccogliere i nomi e descrizioni delle abilità
-                        $ability_details = [];
-
-                        // Itera attraverso le abilità e crea stringhe con nome, tipo e descrizione
-                        foreach ($pokemon_data['abilities'] as $ability) {
-                            $ability_name = htmlspecialchars($ability['ability_name']);
-                            $ability_type = ucfirst(htmlspecialchars($ability['ability_type'])); // Prima lettera maiuscola
-                            $ability_description = htmlspecialchars($ability['ability_description']); // Ottieni la descrizione
-
-                            // Unisci il nome dell'abilità e il suo tipo, aggiungi la descrizione in un attributo data
-                            $ability_details[] = "<span class='ability' data-description='" . $ability_description . "'>$ability_name ($ability_type)</span>";
-                        }
-
-                        // Unisci i dettagli delle abilità con una virgola e uno spazio
-                        echo implode(', ', $ability_details);
-                    } else {
-                        // Messaggio di fallback se non ci sono abilità
-                        echo "N/A";
-                    }
-                    ?>
-                    <br>
-                </p>
-            </div>
 
             <div class="pokemon-stats">
                 <h3 class="stats-title">STATS</h3>
@@ -240,7 +251,6 @@ try {
                                 <p><?php echo htmlspecialchars($mega['mega_evolution_name']); ?></p>
                                 <img src="assets/images/megaEvolutions/<?php echo htmlspecialchars($mega['img']); ?>" alt="<?php echo htmlspecialchars($mega['mega_evolution_name']); ?>" class="mega-img">
                                 <div class="mega-types">
-                                    <h4>Type:</h4>
                                     <?php
                                     $type_names = explode(', ', $mega['type_names']);
                                     $type_images = explode(', ', $mega['type_images']);
@@ -304,4 +314,5 @@ try {
     </div>
 
 </body>
+
 </html>
