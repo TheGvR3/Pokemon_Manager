@@ -11,7 +11,8 @@ function get_pokemon_base_info($conn, $id) {
         levelling_rate.exp_tot AS exp_tot,
         primary_type_colors.type_color AS primary_type_color,  
         primary_type_colors.gradient_color AS primary_type_gradient,
-        primary_type_colors.type_color_light AS primary_type_color_light
+        primary_type_colors.type_color_light AS primary_type_color_light,
+        pokemon.gigamax
     FROM pokemon
     JOIN pokemon_base_stats ON pokemon.id = pokemon_base_stats.pokemon_id
     JOIN levelling_rate ON pokemon.levelling_rate = levelling_rate.name

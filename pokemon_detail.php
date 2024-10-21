@@ -21,6 +21,13 @@ try {
         throw new Exception("Nessun Pokémon trovato con l'ID fornito");
     }
 
+    // Modifichiamo il controllo per la forma Gigamax
+    $has_gigamax = !empty($pokemon_data['base']['gigamax']);
+    $gigamax_form = $has_gigamax ? [
+        'gigamax_form_name' => $pokemon_data['base']['name'] . ' (Gigamax)',
+        'img' => $pokemon_data['base']['gigamax']
+    ] : null;
+
     $primary_type_gradient = isset($pokemon_data['base']['primary_type_gradient']) ? $pokemon_data['base']['primary_type_gradient']
         : 'linear-gradient(100deg, rgba(203,200,193,1) 0%, rgba(60,67,85,1) 100%)';
 
@@ -40,15 +47,7 @@ try {
         $pokemon_data['mega_evolutions'] = [];
     }
 
-    $has_gigamax = check_gigamax_forms($conn, $pokemon_data['base']['id']);
-    if ($has_gigamax) {
-        $pokemon_data['gigamax'] = get_gigamax_forms($conn, $pokemon_data['base']['id']);
-    } else {
-        $pokemon_data['gigamax'] = [];
-    }
-
     $pokemon_data['base']['has_mega_evolution'] = !empty($pokemon_data['mega_evolutions']);
-    $pokemon_data['base']['has_gigamax'] = !empty($pokemon_data['gigamax']);
     $pokemon_data['base']['has_regional_form'] = false; // Aggiorna in base alla tua logica
 
 } catch (Exception $e) {
@@ -178,8 +177,6 @@ try {
                             <p><strong>Gender Difference:</strong> <?php echo htmlspecialchars($pokemon_data['base']['gender_differences'] ? 'Yes' : 'No'); ?> </p>
                             <p><strong>Mega Evolution:</strong>
                                 <?php echo htmlspecialchars(isset($pokemon_data['base']['has_mega_evolution']) ? ($pokemon_data['base']['has_mega_evolution'] ? 'Yes' : 'No') : 'No'); ?> </p>
-                            <p><strong>Gigantamax:</strong>
-                                <?php echo htmlspecialchars(isset($pokemon_data['base']['has_gigamax']) ? ($pokemon_data['base']['has_gigamax'] ? 'Yes' : 'No') : 'No'); ?> </p>
                             <p><strong>Regional:</strong>
                                 <?php echo htmlspecialchars(isset($pokemon_data['base']['has_regional_form']) ? ($pokemon_data['base']['has_regional_form'] ? 'Yes' : 'No') : 'No'); ?></p>
                             <p><strong>Alpha:</strong> <?php echo htmlspecialchars($pokemon_data['base']['alpha'] ? 'Yes' : 'No'); ?></p>
@@ -293,19 +290,17 @@ try {
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($pokemon_data['gigamax'])): ?>
-                <div class="gigamax-evolutions">
-                    <div class="dynamax">
+            <?php if ($has_gigamax): ?>
+                <div class="gigamax-form">
+                    <div class="g_form">
                         <img src="assets/images/gigamax/Dynamax_icon.png" class="dyna_icon">
-                        <strong>Gigamax Forms:</strong>
+                        <strong>Gigamax Form:</strong>
                     </div>
-                    <div class="gigamax-evolutions-container">
-                        <?php foreach ($pokemon_data['gigamax'] as $gigamax): ?>
-                            <div class="gigamax-evolution">
-                                <img src="assets/images/gigamax/<?php echo htmlspecialchars($gigamax['img']); ?>" alt="<?php echo htmlspecialchars($gigamax['gigamax_form_name']); ?>" class="gigamax-img">
-                                <p class="giga-name"><?php echo htmlspecialchars($gigamax['gigamax_form_name']); ?></p>
-                            </div>
-                        <?php endforeach; ?>
+                    <div class="gigamax-form-container">
+                        <div class="gigamax-form-details">
+                            <h3><strong><?php echo htmlspecialchars($gigamax_form['gigamax_form_name']); ?></strong></h3>
+                            <img src="assets/images/gigamax/<?php echo htmlspecialchars($gigamax_form['img']); ?>" alt="<?php echo htmlspecialchars($gigamax_form['gigamax_form_name']); ?>" class="gigamax-img">
+                        </div>
                     </div>
                 </div>
             <?php endif; ?>
