@@ -24,7 +24,6 @@ try {
     // Modifichiamo il controllo per la forma Gigamax
     $has_gigamax = !empty($pokemon_data['base']['gigamax']);
     $gigamax_form = $has_gigamax ? [
-        'gigamax_form_name' => $pokemon_data['base']['name'] . ' (Gigamax)',
         'img' => $pokemon_data['base']['gigamax']
     ] : null;
 
@@ -54,6 +53,9 @@ try {
     echo "Si è verificato un errore: " . $e->getMessage();
     exit;
 }
+//COPIARE DOPO
+//        <img src="assets/images/gigamax/Dynamax_icon.png" class="dyna_icon">
+
 ?>
 
 <!DOCTYPE html>
@@ -91,7 +93,6 @@ try {
             <?php endif; ?>
         </div>
 
-
         <div class="box">
             <h1 class="namep" style="color: <?php echo htmlspecialchars($pokemon_data['base']['primary_type_color']); ?>;">
                 <strong>#<?php echo htmlspecialchars($pokemon_data['base']['national_pokedex_number']); ?></strong>
@@ -100,7 +101,18 @@ try {
             <p class="gen"><strong>Generation:</strong> <?php echo htmlspecialchars($pokemon_data['base']['gen_of_introduction']); ?></p>
             <div class="img-box">
                 <div>
-                    <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($pokemon_data['base']['img']); ?>" alt="<?php echo htmlspecialchars($pokemon_data['base']['name']); ?>" class="poke-img">
+                    <div class="poke-img-box" onclick="flipImage(this)">
+                        <div class="poke-img-flipper">
+                            <div class="poke-img">
+                                <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($pokemon_data['base']['img']); ?>" alt="<?php echo htmlspecialchars($pokemon_data['base']['name']); ?>">
+                            </div>
+                            <?php if ($has_gigamax): ?>
+                                <div class="gigamax-form">
+                                    <img src="assets/images/gigamax/<?php echo htmlspecialchars($gigamax_form['img']); ?>" alt="Gigamax form">
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                     <div class="poke-type">
                         <p><strong>Type:</strong></p>
                         <?php foreach ($pokemon_data['types'] as $type): ?>
@@ -239,7 +251,7 @@ try {
             <?php if (!empty($pokemon_data['mega_evolutions'])): ?>
                 <div class="mega-evolutions">
                     <div class="m_evo">
-                        <img src="assets/images/megaEvolutions/Tretta_Mega_Evolution_icon.png" class="dyna_icon">
+                        <img src="assets/images/megaEvolutions/Tretta_Mega_Evolution_icon.png" class="mega_icon">
                         <strong>Mega Evolutions:</strong>
                     </div>
                     <div class="mega-evolutions-container">
@@ -290,24 +302,16 @@ try {
                 </div>
             <?php endif; ?>
 
-            <?php if ($has_gigamax): ?>
-                <div class="gigamax-form">
-                    <div class="g_form">
-                        <img src="assets/images/gigamax/Dynamax_icon.png" class="dyna_icon">
-                        <strong>Gigamax Form:</strong>
-                    </div>
-                    <div class="gigamax-form-container">
-                        <div class="gigamax-form-details">
-                            <h3><strong><?php echo htmlspecialchars($gigamax_form['gigamax_form_name']); ?></strong></h3>
-                            <img src="assets/images/gigamax/<?php echo htmlspecialchars($gigamax_form['img']); ?>" alt="<?php echo htmlspecialchars($gigamax_form['gigamax_form_name']); ?>" class="gigamax-img">
-                        </div>
-                    </div>
-                </div>
-            <?php endif; ?>
+
 
         </div>
     </div>
 
+    <script>
+        function flipImage(element) {
+            element.classList.toggle('flipped');
+        }
+    </script>
 </body>
 
 </html>
