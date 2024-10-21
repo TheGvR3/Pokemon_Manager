@@ -57,6 +57,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative; /* Aggiunto per posizionare la dyna_icon relativamente a questo elemento */
 }
 
 .poke-img {
@@ -65,6 +66,9 @@ body {
     height: auto;
     object-fit: contain;
     margin-bottom: 15px;
+    z-index: 2;
+    transform: rotateY(0deg);
+    position: relative;
 }
 
 .description {
@@ -84,8 +88,9 @@ body {
     margin-top: 20px; /* Aggiunto per spostare il box dei tipi verso il basso */
 }
 
+
 .type-image {
-    padding-top: 13px;
+    padding-top: 0;
     width:100px;
     height: 21px;
 }
@@ -217,9 +222,13 @@ body {
 }
 
 .dyna_icon {
+    position: absolute;
+    top: 10px; /* Cambiato da bottom a top per posizionare l'icona in alto */
+    left: 10px;
     width: 30px;
     height: auto;
-    margin-right: 10px;
+    z-index: 10;
+    pointer-events: none;
 }
 
 /* Colori per le statistiche */
@@ -229,6 +238,96 @@ body {
 .stat-sp-attack, .mega-stat-sp-attack { background-color: #ff8c00; }
 .stat-sp-defence, .mega-stat-sp-defence { background-color: #0057b7; }
 .stat-speed, .mega-stat-speed { background-color: #800080; }
+
+.poke-img-box {
+    perspective: 1000px;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    cursor: pointer;
+    position: relative;
+}
+
+.poke-img-flipper {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Assicura che sia sotto la dynaicon */
+}
+
+.poke-img-box.flipped .poke-img-flipper {
+    transform: rotateY(180deg);
+}
+
+.poke-img, .gigamax-form {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2; /* Assicura che sia sotto la dynaicon */
+}
+
+.poke-img {
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+
+.gigamax-form {
+    transform: rotateY(180deg);
+}
+
+.poke-img img, .gigamax-form img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.poke-img-box {
+    perspective: 1000px;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    cursor: pointer;
+    position: relative;
+}
+
+.dyna_icon {
+    position: absolute;
+    top: 180px; /* Cambiato da bottom a top per posizionare l'icona in alto */
+    left: 260px;
+    width: 30px;
+    height: auto;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.poke-img-box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    z-index: 5;
+}
+
+
+.mega_icon {
+    width: 30px;
+    height: auto;
+    padding-left: 10px;
+}
+
+/* Modifica la regola CSS esistente per .poke-type */
+
+
 
 @media (min-width: 768px) {
     .container {
@@ -262,17 +361,29 @@ body {
         margin-bottom: 0;
     }
 
-    .img-box .poke-type{
-        margin-top: -30px;
+    
+    .dyna_icon {
+        width: 40px;
+        top: auto; /* Rimuove il posizionamento dall'alto */
+        bottom: 100px; /* Ripristina il posizionamento dal basso per schermi grandi */
+        left: 450px;
+    }
+
+    .img-box .poke-type {
+        margin-top: 50px; /* Ridotto il margine superiore per schermi più grandi */
         margin-bottom: 0;
     }
 
+    .poke-img-box {
+        width: 300px;
+        height: 300px;
+    }
+
     .img-box .poke-type .type-image{
-        margin-top: 30px;
-        margin-top: 30px;
         padding: 0;
         width:100px;
         height: 20px;
+        padding-bottom: 45px;
     }
 
     .info-list{
@@ -341,11 +452,6 @@ body {
         width: 100px;
         height: 21px;
     }
-
-    .gigamax-evolution {
-        background-image: url('/Pokemon_Manager/assets/images/gigamax/giga-background.jpg');
-        width: 400px;
-    }
 }
 
 @media (min-width: 992px) {
@@ -360,85 +466,5 @@ body {
     }
 }
 
-/* Aggiungi queste nuove regole CSS alla fine del file */
 
-.poke-img-box {
-    perspective: 1000px;
-    width: 200px;  /* Riportato a 200px */
-    height: 200px; /* Riportato a 200px */
-    margin: 0 auto;
-    cursor: pointer;
-}
 
-.poke-img-flipper {
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.poke-img-box.flipped .poke-img-flipper {
-    transform: rotateY(180deg);
-}
-
-.poke-img, .gigamax-form {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.poke-img {
-    z-index: 2;
-    transform: rotateY(0deg);
-}
-
-.gigamax-form {
-    transform: rotateY(180deg);
-}
-
-.poke-img img, .gigamax-form img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-.dyna_icon {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    width: 30px;
-    height: auto;
-    z-index: 3;
-}
-
-@media (min-width: 768px) {
-    .poke-img-box {
-        width: 300px;  /* Riportato a 300px per schermi più grandi */
-        height: 300px; /* Riportato a 300px per schermi più grandi */
-    }
-}
-
-/* Modifica la regola CSS esistente per .poke-type */
-.poke-type {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    margin-top: 20px; /* Aggiunto per spostare il box dei tipi verso il basso */
-}
-
-/* Se necessario, aggiungi o modifica questa regola per schermi più grandi */
-@media (min-width: 768px) {
-    .img-box .poke-type {
-        margin-top: 10px; /* Ridotto il margine superiore per schermi più grandi */
-        margin-bottom: 0;
-    }
-}

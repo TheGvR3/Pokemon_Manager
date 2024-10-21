@@ -101,7 +101,7 @@ try {
             <p class="gen"><strong>Generation:</strong> <?php echo htmlspecialchars($pokemon_data['base']['gen_of_introduction']); ?></p>
             <div class="img-box">
                 <div>
-                    <div class="poke-img-box" onclick="flipImage(this)">
+                    <div class="poke-img-box <?php echo $has_gigamax ? 'has-gigamax' : ''; ?>" onclick="flipImage(this)">
                         <div class="poke-img-flipper">
                             <div class="poke-img">
                                 <img src="assets/images/pokemonSprites/<?php echo htmlspecialchars($pokemon_data['base']['img']); ?>" alt="<?php echo htmlspecialchars($pokemon_data['base']['name']); ?>">
@@ -113,6 +113,9 @@ try {
                             <?php endif; ?>
                         </div>
                     </div>
+                    <?php if ($has_gigamax): ?>
+                        <img src="assets/images/gigamax/Dynamax_icon.png" class="dyna_icon" alt="Dynamax Icon">
+                    <?php endif; ?>
                     <div class="poke-type">
                         <p><strong>Type:</strong></p>
                         <?php foreach ($pokemon_data['types'] as $type): ?>
@@ -309,7 +312,9 @@ try {
 
     <script>
         function flipImage(element) {
-            element.classList.toggle('flipped');
+            if (element.classList.contains('has-gigamax')) {
+                element.classList.toggle('flipped');
+            }
         }
     </script>
 </body>
