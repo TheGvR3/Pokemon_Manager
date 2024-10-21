@@ -93,10 +93,18 @@ try {
                                 ?>
                             </td>
                             <td data-label="Categoria" class="hide-mobile"><?php echo htmlspecialchars($poke['category']); ?></td>
-                            <td data-label="Differenza di Genere" class="hide-mobile"><?php echo $poke['gender_differences'] ? 'Sì' : 'No'; ?></td>
-                            <td data-label="Mega Evoluzione" class="hide-mobile"><?php echo $poke['has_mega_evolution'] ? 'Sì' : 'No'; ?></td>
-                            <td data-label="Gigamax" class="hide-mobile"><?php echo $poke['has_gigamax'] ? 'Sì' : 'No'; ?></td>
-                            <td data-label="Forma Alpha" class="hide-mobile"><?php echo $poke['alpha'] ? 'Sì' : 'No'; ?></td>
+                            <td class="hide-mobile">
+                                <img src="assets/images/<?php echo $poke['gender_differences'] ? 'Gender_diff.png' : 'Gender_diff_off.png'; ?>"  class="gender_icon">
+                            </td>
+                            <td class="hide-mobile">
+                                <img src="assets/images/megaEvolutions/<?php echo $poke['has_mega_evolution'] ? 'Tretta_Mega_Evolution_icon.png' : 'Tretta_Mega_Evolution_icon_off.png'; ?>" alt="Mega Evolution Icon" class="mega_icon">
+                            </td>
+                            <td class="hide-mobile">
+                                <img src="assets/images/gigamax/<?php echo $poke['has_gigamax'] ? 'Dynamax_icon.png' : 'Dynamax_icon_off.png'; ?>" alt="Dynamax Icon" class="dyna_icon">
+                            </td>
+                            <td class="hide-mobile">
+                                <img src="assets/images/<?php echo $poke['alpha'] ? 'Alpha_icon.png' : 'Alpha_icon_off.png'; ?>" alt="Alpha Form Icon" class="alpha_icon">
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

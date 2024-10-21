@@ -11,6 +11,7 @@ body {
     padding: 20px;
     max-width: 100%;
     margin: 0 auto;
+    overflow-x: hidden; /* Nasconde la barra di scorrimento orizzontale */
 }
 
 h1 {
@@ -43,10 +44,12 @@ h1 {
     background-color: #444;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    width: 100%;
 }
 
 table {
     width: 100%;
+    min-width: 1200px; /* Aumenta la larghezza minima */
     border-collapse: separate;
     border-spacing: 0;
     background-color: #444;
@@ -109,7 +112,26 @@ tr:hover {
 
 @media (min-width: 1200px) {
     .content {
-        max-width: 1140px;
+        max-width: 1000px; /* Aumenta la larghezza massima del contenuto */
+        padding: 30px 0;
+    }
+
+    .table-container {
+        overflow-x: visible; /* Rimuove la barra di scorrimento orizzontale su schermi grandi */
+    }
+
+    table {
+        min-width: 100%; /* Permette alla tabella di adattarsi alla larghezza del contenitore */
+    }
+
+    .hide-mobile {
+        display: table-cell;
+    }
+}
+
+@media (min-width: 1400px) {
+    .content {
+        max-width: 1238px; /* Aumenta ulteriormente la larghezza massima per schermi molto grandi */
     }
 }
 
@@ -120,4 +142,35 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+.dyna_icon {
+    width: 30px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Aggiungi questa nuova regola alla fine del file */
+.mega_icon {
+    width: 30px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Aggiungi questa nuova regola alla fine del file */
+.alpha_icon {
+    width: 30px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Aggiungi questa nuova regola alla fine del file */
+.gender_icon {
+    width: 30px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
